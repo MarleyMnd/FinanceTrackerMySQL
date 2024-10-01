@@ -35,15 +35,12 @@
             />
           </div>
 
-          <!-- Email -->
+          <!-- password -->
           <div class="mb-4">
-            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+            <label class="block text-sm font-medium text-gray-700">Password</label>
             <input
               type="text"
-              id="email"
-              v-model="email"
               class="mt-1 w-full p-3 bg-white text-gray-900 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              placeholder="@gmail.com"
             />
           </div>
 
@@ -71,13 +68,34 @@ export default {
     }
   },
   methods: {
-    createAccount () {
-      // Logic to create an account
-      console.log('Account created for:', this.name, this.surname, this.email)
-      // Here you would typically call an API to handle the account creation
-      this.name = ''
-      this.surname = ''
-      this.email = '' // Clear the fields after creating
+    async CreateAccount () {
+      try {
+        const response = await fetch('http://localhost:3001/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(this.credentials)
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          console.log('Account created successfully:', data)
+
+          // Redirect to the login page or another page
+          this.$router.push('/login') // Adjust the path as needed
+        } else if (response.status === 409) {
+          alert('Username already exists')
+        } else {
+          alert('An error occurred. Please try again.')
+        }
+      } catch (error) {
+        console.error('Error:', error)
+      }
+
+      // Clear the form after submission
+      this.credentials.username = ''
+      this.credentials.password = ''
     }
   }
 }
