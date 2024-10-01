@@ -1,12 +1,11 @@
 <template>
-    <div class="gradient-bg">
+    <div class="bg_color min-h-screen flex flex-col">
       <!-- Conteneur principal -->
-      <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
-
+      <div class="w-full max-w-5xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
         <!-- Header de la page -->
         <div class="flex justify-between items-center mb-6">
           <h1 class="text-3xl font-semibold">Subscription manager</h1>
-          <router-link to="/" class="text-blue-600 hover:underline">Back to the Main Page</router-link>
+          <router-link to="/" class="text-blue-600 hover:underline">Back</router-link>
         </div>
 
         <!-- Formulaire pour ajouter un nouvel abonnement -->
@@ -77,9 +76,10 @@ export default {
 </script>
 
   <style scoped>
-  .gradient-bg {
+  .bg-color {
     background: linear-gradient(to right, #364652, rgb(255, 255, 255));
   }
+
   /* Designing for scroll-bar */
   ::-webkit-scrollbar {
     width: 6px;

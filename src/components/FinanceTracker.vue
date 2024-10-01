@@ -1,6 +1,7 @@
 <template>
-  <body class="bg-gradient-to-r from-gray-600 to-gray-200 text-gray-900">
-    <main class="max-w-6xl mx-auto mt-5 mb-5 py-10 px-4 lg:px-8 bg-white rounded-lg shadow-xl Content">
+  <body class="bg_color min-h-screen flex flex-col justify-between text-gray-900">
+    <main class="max-w-6xl mx-auto mt-5 mb-5 py-10 px-4 lg:px-8 bg-white rounded-lg shadow-xl">
+
       <!-- Title Section -->
       <h1 class="text-center text-4xl font-bold text-gray-800 mb-6 md:text-5xl">Finance Tracker</h1>
       <p class="text-center text-lg text-gray-500 mb-8">The best way to manage your money!</p>
@@ -114,6 +115,11 @@ export default { name: 'FinanceTracker' }
 </script>
 
   <style>
+
+  /* Apply your background color using Tailwind */
+  .bg_color {
+    background: linear-gradient(to right, #364652, rgb(255, 255, 255));
+  }
 
   /* Designing for scroll-bar */
   ::-webkit-scrollbar {
