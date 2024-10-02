@@ -5,7 +5,6 @@
     <router-view />
   </div>
 </template>
-
 <script>
 import SideBar from './Components/SideBar.vue'
 export default {
@@ -28,12 +27,13 @@ export default {
   mounted () {
     // Fetch the full name from localStorage and set it to the component's state
     this.fullName = localStorage.getItem('full name') || 'Guest' // Ensure the key matches what you set
+    this.balance = localStorage.getItem('balance') || '/' // Ensure the key matches what you set
   }
 }
 </script>
 
 <style>
-  body {
-    margin: 0;
-  }
+body {
+  margin: 0;
+}
 </style>
