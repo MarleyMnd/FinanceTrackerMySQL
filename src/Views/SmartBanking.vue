@@ -30,12 +30,10 @@
           </div>
         </div>
 
-        <!-- Graph Placeholder -->
+        <!-- Graph Section -->
         <div class="px-10">
           <div class="bg-gray-100 rounded-xl p-6 shadow-md">
-            <div class="w-full h-80 bg-gray-200 rounded-xl flex items-center justify-center">
-              <p class="text-gray-500">Graph Chart Placeholder</p>
-            </div>
+            <canvas ref="expenseChart" class="rounded-xl"></canvas>
           </div>
         </div>
 
@@ -75,30 +73,81 @@
 </template>
 
 <script>
+import { Chart, registerables } from 'chart.js'
+
+Chart.register(...registerables)
+
 export default {
   name: 'FinanceTracker',
+  data () {
+    return {
+      chartInstance: null // Store the chart instance for later use
+    }
+  },
   mounted () {
-    const script = document.createElement('script')
-    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js'
-    script.async = true
-    script.innerHTML = JSON.stringify({
-      symbols: [
-        { proName: 'FOREXCOM:SPXUSD', title: 'S&P 500 Index' },
-        { proName: 'FOREXCOM:NSXUSD', title: 'US 100 Cash CFD' },
-        { proName: 'FX_IDC:EURUSD', title: 'EUR to USD' },
-        { proName: 'BITSTAMP:BTCUSD', title: 'Bitcoin' },
-        { proName: 'BITSTAMP:ETHUSD', title: 'Ethereum' }
-      ],
-      showSymbolLogo: true,
-      isTransparent: false,
-      displayMode: 'adaptive',
-      colorTheme: 'dark',
-      locale: 'en'
-    })
+    this.loadTradingViewWidget()
+    this.renderChart()
+  },
+  methods: {
+    loadTradingViewWidget () {
+      const script = document.createElement('script')
+      script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js'
+      script.async = true
+      script.innerHTML = JSON.stringify({
+        symbols: [
+          { proName: 'FOREXCOM:SPXUSD', title: 'S&P 500 Index' },
+          { proName: 'FOREXCOM:NSXUSD', title: 'US 100 Cash CFD' },
+          { proName: 'FX_IDC:EURUSD', title: 'EUR to USD' },
+          { proName: 'BITSTAMP:BTCUSD', title: 'Bitcoin' },
+          { proName: 'BITSTAMP:ETHUSD', title: 'Ethereum' }
+        ],
+        showSymbolLogo: true,
+        isTransparent: false,
+        displayMode: 'adaptive',
+        colorTheme: 'dark',
+        locale: 'en'
+      })
 
-    this.$refs.tradingViewWidget.appendChild(script)
+      this.$refs.tradingViewWidget.appendChild(script)
+    },
+    renderChart () {
+      const ctx = this.$refs.expenseChart.getContext('2d')
+      this.chartInstance = new Chart(ctx, { // Store the chart instance
+        type: 'line',
+        data: {
+          labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+          datasets: [{
+            label: 'Monthly Expenses',
+            data: [1200, 1900, 3000, 2500, 2800, 2300], // Sample data for expenses
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            fill: true,
+            tension: 0.1 // Adds a slight curve to the line
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Amount ($)'
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Months'
+              }
+            }
+          }
+        }
+      })
+    }
   }
 }
+
 </script>
 
 <style scoped>
