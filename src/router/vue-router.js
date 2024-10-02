@@ -1,11 +1,11 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
-import FinanceTracker from '../components/FinanceTracker.vue'
-import SmartBanking from '../components/SmartBanking.vue'
-import SubscriptionManag from '../components/SubscriptionManag.vue'
-import LoginPage from '@/components/LoginPage.vue'
-import CreateAccount from '@/components/CreateAccount.vue'
-import ForgotPasswd from '@/components/ForgotPasswd.vue'
+import FinanceTracker from '../Views/FinanceTracker.vue'
+import SmartBanking from '../Views/SmartBanking.vue'
+import SubscriptionManag from '../Views/SubscriptionManag.vue'
+import LoginPage from '../Views/LoginPage.vue'
+import CreateAccount from '../Views/CreateAccount.vue'
+import ForgotPasswd from '../Views/ForgotPasswd.vue'
 
 const routes = [
   {
