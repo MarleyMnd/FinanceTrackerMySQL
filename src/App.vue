@@ -3,6 +3,7 @@
     <!-- Only show the sidebar if the current route is not 'login' -->
     <SideBar v-if="!hideSidebar" />
     <router-view />
+  </div>
   <div>
     <!-- This is where the routed component will be displayed -->
     <router-view :fullName="fullName"></router-view>
