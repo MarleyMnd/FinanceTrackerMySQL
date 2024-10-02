@@ -44,6 +44,7 @@ export default {
       credentials: {
         username: '',
         password: ''
+        // No need for fullName here during login
       }
     }
   },
@@ -60,19 +61,23 @@ export default {
 
         if (response.ok) {
           const data = await response.json()
-          console.log('API Response:', data) // Log the response
+          console.log('API Response:', data) // Check if 'full name' is received correctly
 
-          // Check if full name exists and store it
-          if (data['full name']) {
-            localStorage.setItem('full name', data['full name'])
+          // Accessing the 'fullName' field returned from the login response
+          if (data.fullName) {
+            localStorage.setItem('fullName', data.fullName) // Saving full name
+            localStorage.setItem('balance', data.balance) // Saving balance
+            localStorage.setItem('expenses', data.expenses)
           } else {
-            localStorage.setItem('full name', 'Guest')
+            localStorage.setItem('fullName', 'Guest') // Fallback if no full name
+            localStorage.setItem('balance', '/') // if no balance
+            localStorage.setItem('expenses', '/')
           }
 
           // Redirect to home page
           this.$router.push('/Finance')
         } else {
-        // Handle errors
+          // Handle errors
           if (response.status === 401) {
             alert('Incorrect password')
           } else if (response.status === 404) {
@@ -86,7 +91,6 @@ export default {
       }
     }
   }
-
 }
 </script>
 

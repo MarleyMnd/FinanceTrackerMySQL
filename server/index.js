@@ -13,24 +13,27 @@ mongoose.connect('mongodb://localhost:27017/Finance_Tracker');
 
 const UserSchema = new mongoose.Schema({
     username: String,
-    password: String
+    password: String,
+    fullName: String,
+    balance: Number,
+    expenses: Number
 });
 
 const UserModel = mongoose.model('users', UserSchema);
 
 app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, fullName, balance,expenses} = req.body;
 
     try {
         const user = await UserModel.findOne({ username });
 
         if (!user) {
-            return res.status(404).json({ message: 'Incorrect password' });
+            return res.status(404).json({ message: 'User not found' });
         }
 
         // Direct comparison since no encryption is used
         if (password === user.password) {
-            res.status(200).json({ message: 'Login successful' });
+            res.status(200).json({ message: 'Login successful', fullName: user.fullName , balance: user.balance, expenses: user.expenses});
         } else {
             res.status(401).json({ message: 'Incorrect password' });
         }
