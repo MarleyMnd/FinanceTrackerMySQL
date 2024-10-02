@@ -1,12 +1,9 @@
 <template>
   <body class="bg_color min-h-screen flex flex-col justify-between text-gray-900">
-    <main class="max-w-6xl mx-auto mt-5 mb-5 py-10 px-4 lg:px-8 bg-white rounded-lg shadow-xl">
+    <main class="w-full max-w-6xl mx-auto mt-5 mb-5 py-10 px-4 lg:px-8 bg-white rounded-lg shadow-xl">
       <!-- Title Section -->
       <h1 class="text-center text-4xl font-bold text-gray-800 mb-6 md:text-5xl">Finance Tracker</h1>
       <p class="text-center text-lg text-gray-500 mb-8">The best way to manage your money!</p>
-
-      <!-- Dashboard Section -->
-      <div class="grid gap-6 lg:grid-cols-3 mb-8">
         <!-- Welcome Message -->
         <div class="bg-gray-100 rounded-lg p-4 shadow-md flex items-center justify-center">
           <p class="font-bold text-xl text-gray-800">Hello, {{ fullName }}</p>
@@ -21,8 +18,6 @@
           <p class="text-lg font-medium text-gray-600">Your expenses</p>
           <h2 class="text-red-500 text-3xl font-bold">-$10,000</h2>
         </div>
-      </div>
-
       <div class="border rounded-2xl overflow-hidden m-2 max-h-64 overflow-y-auto relative">
         <table class="min-w-full text-left text-sm bg-neutral-200 table-fixed">
           <tbody>
@@ -125,25 +120,4 @@ export default {
   background: linear-gradient(to right, #364652, rgb(255, 255, 255));
 }
 
-/* Designing for scroll-bar */
-::-webkit-scrollbar {
-  width: 9px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: rgb(225, 215, 215);
-  border-radius: 5px;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #2c3e50;
-  border-radius: 5px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #495a5e;
-}
 </style>

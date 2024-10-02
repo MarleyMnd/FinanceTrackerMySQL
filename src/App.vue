@@ -1,12 +1,24 @@
 <template>
-  <div>
-    <!-- This is where the routed component will be displayed -->
-    <router-view></router-view>
+  <div id="app">
+    <!-- Only show the sidebar if the current route is not 'login' -->
+    <SideBar v-if="!hideSidebar" />
+    <router-view />
   </div>
 </template>
 
 <script>
+import SideBar from './Components/SideBar.vue'
 export default {
+  components: {
+    SideBar
+  },
+  computed: {
+    // Check if the current route is the login page (or any other route you want to exclude)
+    hideSidebar () {
+      const routesWithoutSidebar = ['/', '/ForgotPasswd', '/CreateAccount']
+      return routesWithoutSidebar.includes(this.$route.path)
+    }
+  },
   name: 'App',
   data () {
     return {
