@@ -25,7 +25,7 @@ app.post('/login', async (req, res) => {
         const user = await UserModel.findOne({ username });
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'Incorrect password' });
         }
 
         // Direct comparison since no encryption is used
