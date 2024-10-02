@@ -9,17 +9,17 @@
       <div class="grid gap-6 lg:grid-cols-3 mb-8">
         <!-- Welcome Message -->
         <div class="bg-gray-100 rounded-lg p-4 shadow-md flex items-center justify-center">
-          <p class="font-bold text-xl text-gray-800">Hello, {{ fullName }}</p>
+          <p class="font-bold text-xl text-gray-800">Welcome, {{ fullName }}</p>
         </div>
         <!-- Balance -->
         <div class="bg-gray-100 rounded-lg p-4 text-center shadow-md">
           <p class="text-lg font-medium text-gray-600">Your balance</p>
-          <h2 class="text-green-500 text-3xl font-bold">$10,000</h2>
+          <h2 class="text-green-500 text-3xl font-bold"> ${{ balance }}</h2>
         </div>
         <!-- Expenses -->
         <div class="bg-gray-100 rounded-lg p-4 text-center shadow-md">
           <p class="text-lg font-medium text-gray-600">Your expenses</p>
-          <h2 class="text-red-500 text-3xl font-bold">-$10,000</h2>
+          <h2 class="text-red-500 text-3xl font-bold">-${{ expenses }}</h2>
         </div>
       </div>
 
@@ -108,13 +108,15 @@
 export default {
   data () {
     return {
-      fullName: ''
+      fullName: '', // Define fullName in data
+      balance: '',
+      expenses: ''
     }
   },
-  mounted () {
-    // Fetch full name from local storage
-    this.fullName = localStorage.getItem('full name') || 'Guest' // Get full name with a space
-    console.log('Retrieved full name:', this.fullName) // Log the retrieved value
+  created () {
+    this.balance = localStorage.getItem('balance') || '/' // Ensure the key matches what you set
+    this.fullName = localStorage.getItem('fullName') || 'Guest' // Fallback to 'Guest'
+    this.expenses = localStorage.getItem('expenses') || '/'
   }
 }
 </script>
