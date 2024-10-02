@@ -5,7 +5,7 @@
       <!-- Header de la page -->
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-semibold">Subscription Manager</h1>
-        <router-link to="/" class="text-blue-600 hover:underline">Back</router-link>
+        <router-link to="/Finance" class="text-blue-600 hover:underline">Back</router-link>
       </div>
 
       <!-- Formulaire pour ajouter un nouvel abonnement -->

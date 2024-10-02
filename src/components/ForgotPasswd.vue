@@ -6,7 +6,7 @@
         <!-- Header de la page -->
         <div class="flex justify-between items-center mb-6">
           <h1 class="text-3xl font-semibold">Forgot your password?</h1>
-          <router-link to="/LoginPage" class="text-blue-600 hover:underline">Back to the connection page</router-link>
+          <router-link to="/" class="text-blue-600 hover:underline">Back to the connection page</router-link>
         </div>
 
         <div class="bg-gray-50 p-6 rounded-lg shadow-md">

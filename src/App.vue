@@ -7,7 +7,16 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  data () {
+    return {
+      fullName: ''
+    }
+  },
+  mounted () {
+    // Fetch the full name from localStorage and set it to the component's state
+    this.fullName = localStorage.getItem('full name') || 'Guest' // Ensure the key matches what you set
+  }
 }
 </script>
 

@@ -9,12 +9,12 @@ import ForgotPasswd from '@/components/ForgotPasswd.vue'
 
 const routes = [
   {
-    path: '/',
+    path: '/Finance',
     name: 'FinanceTracker',
     component: FinanceTracker
   },
   {
-    path: '/LoginPage',
+    path: '/',
     name: 'LoginPage',
     component: LoginPage
   },

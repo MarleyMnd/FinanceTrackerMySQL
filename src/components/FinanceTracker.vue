@@ -1,7 +1,6 @@
 <template>
   <body class="bg_color min-h-screen flex flex-col justify-between text-gray-900">
     <main class="max-w-6xl mx-auto mt-5 mb-5 py-10 px-4 lg:px-8 bg-white rounded-lg shadow-xl">
-
       <!-- Title Section -->
       <h1 class="text-center text-4xl font-bold text-gray-800 mb-6 md:text-5xl">Finance Tracker</h1>
       <p class="text-center text-lg text-gray-500 mb-8">The best way to manage your money!</p>
@@ -10,7 +9,7 @@
       <div class="grid gap-6 lg:grid-cols-3 mb-8">
         <!-- Welcome Message -->
         <div class="bg-gray-100 rounded-lg p-4 shadow-md flex items-center justify-center">
-          <p class="font-bold text-xl text-gray-800">Hello, Marley Menard</p>
+          <p class="font-bold text-xl text-gray-800">Hello, {{ fullName }}</p>
         </div>
         <!-- Balance -->
         <div class="bg-gray-100 rounded-lg p-4 text-center shadow-md">
@@ -24,7 +23,7 @@
         </div>
       </div>
 
-   <div class="border rounded-2xl overflow-hidden m-2 max-h-64 overflow-y-auto relative">
+      <div class="border rounded-2xl overflow-hidden m-2 max-h-64 overflow-y-auto relative">
         <table class="min-w-full text-left text-sm bg-neutral-200 table-fixed">
           <tbody>
             <!-- Date Row -->
@@ -67,11 +66,6 @@
               <td class="w-1/3 whitespace-nowrap px-6 py-2 italic font-thin text-center">9:47 AM</td>
               <td class="w-1/3 whitespace-nowrap px-6 py-2 text-right text-green-600">+$2537.04</td>
             </tr>
-            <tr>
-              <td class="w-1/3 whitespace-nowrap px-6 py-2 text-left">National Bank</td>
-              <td class="w-1/3 whitespace-nowrap px-6 py-2 italic font-thin text-center">9:47 AM</td>
-              <td class="w-1/3 whitespace-nowrap px-6 py-2 text-right text-green-600">+$2537.04</td>
-            </tr>
             <tr class="sticky bottom-0">
               <td colspan="3" class="px-6 py-4 text-right">
                 <span class="flex justify-end space-x-4">
@@ -108,38 +102,48 @@
       </footer>
     </main>
   </body>
-  </template>
+</template>
 
 <script>
-export default { name: 'FinanceTracker' }
+export default {
+  data () {
+    return {
+      fullName: ''
+    }
+  },
+  mounted () {
+    // Fetch full name from local storage
+    this.fullName = localStorage.getItem('full name') || 'Guest' // Get full name with a space
+    console.log('Retrieved full name:', this.fullName) // Log the retrieved value
+  }
+}
 </script>
 
-  <style>
+<style>
+/* Apply your background color using Tailwind */
+.bg_color {
+  background: linear-gradient(to right, #364652, rgb(255, 255, 255));
+}
 
-  /* Apply your background color using Tailwind */
-  .bg_color {
-    background: linear-gradient(to right, #364652, rgb(255, 255, 255));
-  }
+/* Designing for scroll-bar */
+::-webkit-scrollbar {
+  width: 9px;
+}
 
-  /* Designing for scroll-bar */
-  ::-webkit-scrollbar {
-    width: 9px;
-  }
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgb(225, 215, 215);
+  border-radius: 5px;
+}
 
-  /* Track */
-  ::-webkit-scrollbar-track {
-    background: rgb(225, 215, 215);
-    border-radius: 5px;
-  }
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #2c3e50;
+  border-radius: 5px;
+}
 
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
-    background: #2c3e50;
-    border-radius: 5px;
-  }
-
-  /* Handle on hover */
-  ::-webkit-scrollbar-thumb:hover {
-    background: #495a5e;
-  }
-  </style>
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #495a5e;
+}
+</style>

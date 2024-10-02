@@ -1,6 +1,5 @@
 <template>
   <div class="gradient-bg">
-    <!-- Left side (Gradient from base color to white) -->
     <div class="left-side flex flex-col justify-center items-center p-8 text-white">
       <h1 class="mb-4 text-3xl font-extrabold bg-clip-text bg-gradient-to-r from-orange-900 to-red-300 md:text-5xl lg:text-6xl">
         Finance Tracker
@@ -10,7 +9,6 @@
       </section>
     </div>
 
-    <!-- Right side (White) -->
     <div class="right-side flex justify-center items-center">
       <form @submit.prevent="handleSubmit" class="form-container text-primary border border-white flex flex-col gap-4 w-500 p-2 rounded border-primary">
         <input
@@ -52,82 +50,82 @@ export default {
   methods: {
     async handleSubmit () {
       try {
-        //  makes an http request to the running server
         const response = await fetch('http://localhost:3001/login', {
-          //  post request: sending data to the server
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          //  converts the username and password to json
           body: JSON.stringify(this.credentials)
         })
 
         if (response.ok) {
           const data = await response.json()
-          console.log('Login successful:', data)
+          console.log('API Response:', data) // Log the response
 
-          // Redirect to the home page
-          this.$router.push('/')
-        } else if (response.status === 401) {
-          alert('Incorrect password')
-        } else if (response.status === 404) {
-          alert('User not found')
+          // Check if full name exists and store it
+          if (data['full name']) {
+            localStorage.setItem('full name', data['full name'])
+          } else {
+            localStorage.setItem('full name', 'Guest')
+          }
+
+          // Redirect to home page
+          this.$router.push('/Finance')
         } else {
-          alert('An error occurred. Please try again.')
+        // Handle errors
+          if (response.status === 401) {
+            alert('Incorrect password')
+          } else if (response.status === 404) {
+            alert('User not found')
+          } else {
+            alert('An error occurred. Please try again.')
+          }
         }
       } catch (error) {
         console.error('Error:', error)
       }
-
-      // Clear the form after submission
-      this.credentials.username = ''
-      this.credentials.password = ''
     }
   }
+
 }
 </script>
 
 <style scoped>
-/* Updated styles for depth effect */
 .form-container {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for depth */
-  background-color: white; /* Ensure background color stands out */
-  border-radius: 10px; /* Rounded corners */
-  padding: 20px; /* Padding for a comfortable spacing */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
 }
 
-/* New style for gradient background */
 .gradient-bg {
-  background: linear-gradient(to right, #364652, rgb(255, 255, 255)); /* Updated gradient to start with the base color */
-  height: 100vh; /* Full viewport height */
+  background: linear-gradient(to right, #364652, rgb(255, 255, 255));
+  height: 100vh;
   display: flex;
 }
 
-/* Optional adjustments for left and right containers */
 .left-side,
 .right-side {
-  width: 50%; /* Split screen */
+  width: 50%;
 }
 
-/* Updated colors */
 .text-primary {
-  color: #364652; /* Use the base color */
+  color: #364652;
 }
 
 .bg-primary {
-  background-color: #364652; /* Use the base color */
+  background-color: #364652;
 }
 
 .hover-bg-accent:hover {
-  background-color: #BD897E; /* Accent color */
+  background-color: #BD897E;
 }
 
 .border-primary {
-  border-color: #364652; /* Use the base color */
+  border-color: #364652;
 }
 
 .placeholder-primary::placeholder {
-  color: #364652; /* Placeholder text color */
+  color: #364652;
 }
 </style>
