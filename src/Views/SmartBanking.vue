@@ -51,7 +51,7 @@
 
         <!-- Profile Button -->
         <div class="flex justify-center px-10">
-          <router-link to="/">
+          <router-link to="/Finance">
             <button class="bg-gray-800 text-white font-bold py-2 px-6 border border-black rounded hover:bg-gray-700 transition">
               Your profile
             </button>

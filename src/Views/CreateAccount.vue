@@ -73,7 +73,7 @@ export default {
           console.log('Account created successfully:', data)
 
           // Redirect to the login page
-          this.$router.push('/LoginPage') // Adjust the path as needed
+          this.$router.push('/') // Adjust the path as needed
         } else if (response.status === 409) {
           alert('Username already exists')
         } else {
