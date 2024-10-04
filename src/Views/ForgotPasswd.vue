@@ -1,28 +1,28 @@
 <template>
-    <div class="gradient-bg">
+    <div class="bg-color min-h-screen flex flex-col justify-between text-gray-900">
       <!-- Conteneur principal -->
-      <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
+      <div class="w-full max-w-2xl mx-auto my-auto p-6 bg-white shadow-lg rounded-lg">
 
         <!-- Header de la page -->
         <div class="flex justify-between items-center mb-6">
           <h1 class="text-3xl font-semibold">Forgot your password?</h1>
-          <router-link to="/" class="text-blue-600 hover:underline">Back to the connection page</router-link>
+          <router-link to="/" class="text-blue-600 hover:underline">Back</router-link>
         </div>
 
         <div class="bg-gray-50 p-6 rounded-lg shadow-md">
 
           <!-- Name and Surname -->
           <div class="mb-4">
-            <label for="email" class="block text-sm font-medium text-gray-700">Specify your email</label>
             <input
               type="text"
               id="email"
               v-model="email"
               class="mt-1 w-full p-3 bg-white text-gray-900 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              placeholder=""
+              placeholder="Specify your email"
+              required
             />
           </div>
-          <h2 class="mb-2 text-center"><strong>If your email is linked to an account we will send you an email!</strong></h2>
+          <h2 class="mb-5 text-center"><strong>If your email is linked to an account we will send you an email!</strong></h2>
           <button @click="sendResetEmail" class="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg">Send Reset Email</button>
         </div>
 
@@ -53,7 +53,7 @@ export default {
 </script>
 
   <style scoped>
-  .gradient-bg {
+  .bg-color {
     background: linear-gradient(to right, #364652, rgb(255, 255, 255));
   }
   /* Designing for scroll-bar */

@@ -26,10 +26,10 @@
         <button type="submit" class="bg-primary text-white p-2 rounded-md hover-bg-accent mb-0">
           <strong>Connect</strong>
         </button>
-        <router-link to="/ForgotPasswd" class="text-primary p-1 rounded-md hover:text-[#BD897E]">
+        <router-link to="/ForgotPasswd" class="text-primary text-center p-1 rounded-md hover:text-[#BD897E]">
           <strong>Forgot your password?</strong>
         </router-link>
-        <router-link to="/CreateAccount" class="bg-primary text-white p-2 rounded-md hover-bg-accent mt-1">
+        <router-link to="/CreateAccount" class="bg-primary text-center text-white p-2 rounded-md hover-bg-accent mt-1">
           <strong>Create an account</strong>
         </router-link>
       </form>

@@ -1,9 +1,9 @@
 <template>
-  <div class="gradient-bg">
-    <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
+  <div class="bg-color min-h-screen flex flex-col justify-between text-gray-900">
+    <div class="w-full max-w-2xl mx-auto my-auto p-6 bg-white shadow-lg rounded-lg">
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-semibold">Welcome to Finance Tracker</h1>
-        <router-link to="/" class="text-blue-600 hover:underline">Back to the connection page</router-link>
+        <router-link to="/" class="text-blue-600 hover:underline">Back</router-link>
       </div>
 
       <div class="bg-gray-50 p-6 rounded-lg shadow-md">
@@ -92,7 +92,7 @@ export default {
 </script>
 
 <style scoped>
-.gradient-bg {
+.bg-color {
   background: linear-gradient(to right, #364652, rgb(255, 255, 255));
 }
 
