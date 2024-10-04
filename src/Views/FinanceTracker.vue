@@ -4,25 +4,28 @@
       <!-- Title Section -->
       <h1 class="text-center text-4xl font-bold text-gray-800 mb-6 md:text-5xl">Finance Tracker</h1>
       <p class="text-center text-lg text-gray-500 mb-8">The best way to manage your money!</p>
+      <!-- Parent container with flex layout -->
+      <div class="flex space-x-4 w-full">
         <!-- Welcome Message -->
-        <div class="bg-gray-100 rounded-lg p-4 shadow-md flex items-center justify-center">
+        <div class="bg-gray-100 rounded-lg p-4 shadow-md flex items-center justify-center flex-1">
           <p class="font-bold text-xl text-gray-800">Welcome, {{ fullName }}</p>
         </div>
         <!-- Balance -->
-        <div class="bg-gray-100 rounded-lg p-4 text-center shadow-md">
+        <div class="bg-gray-100 rounded-lg p-4 text-center shadow-md flex-1">
           <p class="text-lg font-medium text-gray-600">Your balance</p>
-          <h2 class="text-green-500 text-3xl font-bold"> ${{ balance }}</h2>
+          <h2 class="text-green-500 text-3xl font-bold">${{ balance }}</h2>
         </div>
         <!-- Expenses -->
-        <div class="bg-gray-100 rounded-lg p-4 text-center shadow-md">
+        <div class="bg-gray-100 rounded-lg p-4 text-center shadow-md flex-1">
           <p class="text-lg font-medium text-gray-600">Your expenses</p>
           <h2 class="text-red-500 text-3xl font-bold">-${{ expenses }}</h2>
         </div>
-      <div class="border rounded-2xl overflow-hidden m-2 max-h-64 overflow-y-auto relative">
-        <table class="min-w-full text-left text-sm bg-neutral-200 table-fixed">
+      </div>
+      <div class="mt-5 mb-5 border rounded-lg overflow-hidden max-h-64 overflow-y-auto relative drop-shadow-md">
+        <table class="min-w-full max-w-6xl text-left text-sm bg-gray-100 table-fixed">
           <tbody>
             <!-- Date Row -->
-            <tr class="bg-gray-300">
+            <tr class="bg-neutral-200">
               <td colspan="3" class="px-6 py-2 font-semibold text-left">10/18/2024</td>
             </tr>
             <!-- Transactions -->
@@ -42,7 +45,7 @@
               <td class="w-1/3 whitespace-nowrap px-6 py-2 text-right text-green-600">+$2537.04</td>
             </tr>
             <!-- Next Date Row -->
-            <tr class="bg-gray-300">
+            <tr class="bg-neutral-200">
               <td colspan="3" class="px-6 py-2 font-semibold text-left">10/17/2024</td>
             </tr>
             <!-- Transactions -->
