@@ -110,14 +110,17 @@ export default {
   // Fetch data from query params or localStorage if available
     this.username = this.$route.query.username || localStorage.getItem('username') || ''
     this.fullName = this.$route.query.fullName || localStorage.getItem('fullName') || 'Guest'
-    this.balance = parseFloat(this.$route.query.balance) || parseFloat(localStorage.getItem('balance')) || 0 // Ensure balance is a number
+
+    // Retrieve the expenses data from query params or localStorage
     const expensesData = this.$route.query.Allexpenses || localStorage.getItem('Allexpenses') || '[]'
 
-    // Parse and set Allexpenses and calculate total expenses
+    // Parse and set Allexpenses
     this.Allexpenses = JSON.parse(expensesData)
+
+    // Now calculate the total expenses and balance after setting Allexpenses
     this.groupedExpenses = this.groupExpensesByDate(this.Allexpenses)
     this.totalExpenses = this.calculateTotalExpenses(this.Allexpenses)
-    this.balance -= this.totalExpenses // Subtract total expenses from balance
+    this.balance = this.calculateBalance(this.Allexpenses) || '/' // Fallback to '/' if no balance
   },
   methods: {
     // Group expenses by date
@@ -142,7 +145,7 @@ export default {
     },
     calculateBalance (expenses) {
       return expenses.reduce((balance, expense) => {
-        return balance + parseFloat(expense.Price) // Sum of all expenses (positive and negative)
+        return balance + parseFloat(expense.Price) // Adds both positive and negative expenses correctly
       }, 0) // Start from 0
     },
     // Format date (helper function)
