@@ -44,7 +44,6 @@ export default {
       credentials: {
         username: '',
         password: ''
-        // No need for fullName here during login
       }
     }
   },
@@ -61,21 +60,24 @@ export default {
 
         if (response.ok) {
           const data = await response.json()
-          console.log('API Response:', data) // Check if 'full name' is received correctly
+          console.log('API Response:', data) // Check if data is received correctly
 
-          // Accessing the 'fullName' field returned from the login response
-          if (data.fullName) {
-            localStorage.setItem('fullName', data.fullName) // Saving full name
-            localStorage.setItem('balance', data.balance) // Saving balance
-            localStorage.setItem('expenses', data.expenses)
-          } else {
-            localStorage.setItem('fullName', 'Guest') // Fallback if no full name
-            localStorage.setItem('balance', '/') // if no balance
-            localStorage.setItem('expenses', '/')
-          }
+          // Save data locally (for persistence across pages)
+          localStorage.setItem('username', data.username) // Ensure 'username' is returned from the backend
+          localStorage.setItem('fullName', data.fullName)
+          localStorage.setItem('balance', data.balance)
+          localStorage.setItem('Allexpenses', JSON.stringify(data.Allexpenses)) // Use data.Allexpenses instead
 
-          // Redirect to home page
-          this.$router.push('/Finance')
+          // Redirect to FinanceTracker and pass data as props
+          this.$router.push({
+            path: '/Finance',
+            query: {
+              username: data.username,
+              fullName: data.fullName,
+              balance: data.balance,
+              Allexpenses: JSON.stringify(data.Allexpenses) // Pass Allexpenses as JSON string
+            }
+          })
         } else {
           // Handle errors
           if (response.status === 401) {
@@ -90,6 +92,7 @@ export default {
         console.error('Error:', error)
       }
     }
+
   }
 }
 </script>

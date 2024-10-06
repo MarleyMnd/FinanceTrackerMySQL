@@ -92,20 +92,48 @@ export default {
   },
   methods: {
     addSubscription () {
-      // Add a copy of the current subscription to the list
       if (this.subscription.name && this.subscription.price && this.subscription.nextPayment && this.subscription.planType) {
-        this.subscriptions.push({ ...this.subscription })
-        console.log('Subscription added:', this.subscription)
+        // Prepare the subscription data
+        const newSubscription = {
+          Name: this.subscription.name,
+          Price: this.subscription.price,
+          PaymentDate: this.subscription.nextPayment,
+          PlanType: this.subscription.planType
+        }
+
+        // Send a POST request to the server
+        fetch('http://localhost:3001/add-subscription', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: this.username || localStorage.getItem('username'),
+            subscription: newSubscription
+          })
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.message === 'Subscription added successfully') {
+              // Add to local array only if server call succeeds
+              this.subscriptions.push({ ...this.subscription })
+              console.log('Subscription added:', this.subscription)
+              this.subscription = {
+                name: '',
+                price: null,
+                nextPayment: '',
+                planType: ''
+              }
+            } else {
+              alert('Error adding subscription: ' + data.message)
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error)
+            alert('An error occurred while adding the subscription.')
+          })
       } else {
         alert('Please fill out all fields before adding a subscription.')
-      }
-
-      // Clear the form after submission
-      this.subscription = {
-        name: '',
-        price: null,
-        nextPayment: '',
-        planType: ''
       }
     },
     removeSubscription (index) {

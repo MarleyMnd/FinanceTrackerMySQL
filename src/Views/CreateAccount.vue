@@ -91,30 +91,28 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .bg-color {
   background: linear-gradient(to right, #364652, rgb(255, 255, 255));
-}
+}  /* Designing for scroll-bar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
 
-/* Designing for scroll-bar */
-::-webkit-scrollbar {
-  width: 6px;
-}
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: grey;
+    border-radius: 5px;
+  }
 
-/* Track */
-::-webkit-scrollbar-track {
-  background: grey;
-  border-radius: 5px;
-}
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #2c3e50;
+    border-radius: 5px;
+  }
 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #2c3e50;
-  border-radius: 5px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-</style>
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+  </style>
