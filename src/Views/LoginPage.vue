@@ -36,8 +36,10 @@
     </div>
   </div>
 </template>
+
 <script>
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
 export default {
   data () {
@@ -48,6 +50,10 @@ export default {
       }
     }
   },
+  setup () {
+    const router = useRouter()
+    return { router }
+  },
   methods: {
     async handleSubmit () {
       try {
@@ -56,8 +62,13 @@ export default {
           password: this.credentials.password
         })
         console.log('Login successful:', response.data)
+        this.router.push({ name: 'FinanceTracker' })
       } catch (error) {
-        console.error('Login failed:', error)
+        if (error.response && error.response.status === 401) {
+          alert('Login failed: Invalid username or password.')
+        } else {
+          alert('Login failed: An error occurred. Please try again later.')
+        }
       }
     }
   }
