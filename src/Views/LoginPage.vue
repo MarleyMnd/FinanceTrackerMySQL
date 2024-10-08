@@ -36,8 +36,9 @@
     </div>
   </div>
 </template>
-
 <script>
+import axios from 'axios'
+
 export default {
   data () {
     return {
@@ -50,49 +51,15 @@ export default {
   methods: {
     async handleSubmit () {
       try {
-        const response = await fetch('http://localhost:3001/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(this.credentials)
+        const response = await axios.post('http://localhost:8080/login', {
+          username: this.credentials.username,
+          password: this.credentials.password
         })
-
-        if (response.ok) {
-          const data = await response.json()
-          console.log('API Response:', data) // Check if data is received correctly
-
-          // Save data locally (for persistence across pages)
-          localStorage.setItem('username', data.username) // Ensure 'username' is returned from the backend
-          localStorage.setItem('fullName', data.fullName)
-          localStorage.setItem('balance', data.balance)
-          localStorage.setItem('Allexpenses', JSON.stringify(data.Allexpenses)) // Use data.Allexpenses instead
-
-          // Redirect to FinanceTracker and pass data as props
-          this.$router.push({
-            path: '/Finance',
-            query: {
-              username: data.username,
-              fullName: data.fullName,
-              balance: data.balance,
-              Allexpenses: JSON.stringify(data.Allexpenses) // Pass Allexpenses as JSON string
-            }
-          })
-        } else {
-          // Handle errors
-          if (response.status === 401) {
-            alert('Incorrect password')
-          } else if (response.status === 404) {
-            alert('User not found')
-          } else {
-            alert('An error occurred. Please try again.')
-          }
-        }
+        console.log('Login successful:', response.data)
       } catch (error) {
-        console.error('Error:', error)
+        console.error('Login failed:', error)
       }
     }
-
   }
 }
 </script>
