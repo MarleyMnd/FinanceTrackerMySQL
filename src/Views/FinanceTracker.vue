@@ -14,7 +14,7 @@
         <!-- Balance -->
         <div class="bg-gray-100 rounded-lg p-4 text-center shadow-md flex-1">
           <p class="text-lg font-medium text-gray-600">Your balance</p>
-          <h2 class="text-green-500 text-3xl font-bold">{{ balance }}$</h2>
+          <h2 class="text-green-500 text-3xl font-bold">{{ localBalance }}$</h2>
         </div>
         <!-- Total Expenses -->
         <div class="bg-gray-100 rounded-lg p-4 text-center shadow-md flex-1">
@@ -98,8 +98,7 @@ export default {
   data () {
     return {
       username: '',
-      fullName: '',
-      balance: '',
+      localBalance: 0,
       Allexpenses: [],
       totalExpenses: 0,
       groupedExpenses: [],
@@ -110,16 +109,20 @@ export default {
   created () {
     this.fullName = this.$route.query.fullName || localStorage.getItem('fullName') || 'Guest'
     this.balance = this.$route.query.balance || localStorage.getItem('balance') || 0
+    this.localBalance = parseFloat(this.balance)
     this.userId = this.$route.query.userId || localStorage.getItem('userId') || null
 
     const userExpensesData = this.$route.query.userExpenses || localStorage.getItem('userExpenses') || '[]'
     this.Allexpenses = JSON.parse(userExpensesData) // Parse the JSON string to an object
 
-    console.log('User expenses:', JSON.parse(JSON.stringify(this.Allexpenses)))
-
-    // Now calculate the total expenses and balance after setting Allexpenses
-    this.groupedExpenses = this.groupExpensesByDate(this.Allexpenses)
+    // Initialize total expenses and grouped expenses
     this.totalExpenses = this.calculateTotalExpenses(this.Allexpenses)
+    this.localBalance = this.calculateBalance(this.Allexpenses)
+    this.groupedExpenses = this.groupExpensesByDate(this.Allexpenses)
+
+    console.log('User expenses:', this.Allexpenses)
+    console.log('Total Expenses:', this.totalExpenses)
+    console.log('Local Balance:', this.localBalance)
   },
   methods: {
     // Group expenses by date
@@ -143,11 +146,11 @@ export default {
         return sum + Math.abs(parseFloat(expense.price)) // Accumule les prix des dépenses
       }, 0)
     },
-    // Calculate balance
+    // Calculate balance based on initial localBalance
     calculateBalance (expenses) {
-      return expenses.reduce((balance, expense) => {
-        return balance + parseFloat(expense.price) // Additionne les dépenses correctement
-      }, 0) // Commence à partir de 0
+      return this.localBalance + expenses.reduce((balance, expense) => {
+        return balance + parseFloat(expense.price) // Adjust based on added expenses
+      }, 0) // Start from 0
     },
     // Format date (helper function)
     formatDate (date) {
@@ -163,11 +166,8 @@ export default {
     },
     // Add new expense to the database
     async addExpense () {
-    // Trim the name to remove leading or trailing spaces
       const expenseName = this.newExpenseName ? this.newExpenseName.trim() : ''
-
-      // Check if the expense name or price is empty
-      if (!expenseName || !this.newExpensePrice) {
+      if (!expenseName || this.newExpensePrice === undefined) {
         alert('Please enter both an expense name and a price.')
         return
       }
@@ -178,35 +178,37 @@ export default {
         datetime: new Date().toISOString()
       }
 
-      console.log('Adding Expense:', newExpense)
-
       try {
         const response = await axios.post('http://localhost:8080/addExpense', {
           username: this.username || localStorage.getItem('username'),
           expense: newExpense,
-          userId: this.userId // Pass the user ID here
+          userId: this.userId
         })
 
         const expenseData = response.data
-        console.log('Expense added successfully:', expenseData)
 
+        // Update the expenses list
         this.Allexpenses.push(expenseData)
-        console.log('All expenses:', this.Allexpenses)
-        this.localBalance = this.calculateBalance(this.Allexpenses)
-        this.totalExpenses = this.calculateTotalExpenses(this.Allexpenses)
+
+        // Check if the expense is positive or negative
+        if (expenseData.price > 0) {
+          // For positive expenses, just modify the balance
+          this.localBalance += expenseData.price // Subtract from balance
+        } else {
+          // For negative expenses, modify both expenses and balance
+          this.localBalance -= Math.abs(expenseData.price) // Add back to balance
+          this.totalExpenses -= Math.abs(expenseData.price) // Adjust total expenses
+        }
+
+        // Update grouped expenses
         this.groupedExpenses = this.groupExpensesByDate(this.Allexpenses)
 
         // Clear input fields
         this.newExpenseName = ''
         this.newExpensePrice = 0
       } catch (error) {
-        if (error.response) {
-          console.error('Error adding expense:', error.response.data)
-          alert('Failed to add expense: ' + (error.response.data.message || 'An error occurred. Please try again.'))
-        } else {
-          console.error('Error adding expense:', error)
-          alert('Failed to add expense: An unexpected error occurred. Please try again later.')
-        }
+        console.error('Error adding expense:', error)
+        alert('Failed to add expense. Please try again.')
       }
     },
     async removeLastExpense () {
@@ -234,7 +236,7 @@ export default {
           this.Allexpenses.pop()
 
           // Update localBalance and total expenses
-          this.localBalance = this.calculateBalance(this.Allexpenses)
+          this.localBalance += parseFloat(lastExpense.price)
           this.totalExpenses = this.calculateTotalExpenses(this.Allexpenses)
           this.groupedExpenses = this.groupExpensesByDate(this.Allexpenses)
         } else {
