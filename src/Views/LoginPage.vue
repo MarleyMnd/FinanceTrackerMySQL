@@ -61,8 +61,20 @@ export default {
           username: this.credentials.username,
           password: this.credentials.password
         })
-        console.log('Login successful:', response.data)
-        this.router.push({ name: 'FinanceTracker' })
+
+        const userData = response.data
+        console.log('Login successful:', userData)
+
+        console.log('User ID:', userData.id)
+
+        // Store full name in localStorage
+        localStorage.setItem('userId', userData.id)
+        localStorage.setItem('fullName', userData.fullName)
+        localStorage.setItem('balance', userData.balance)
+        localStorage.setItem('userExpenses', JSON.stringify(userData.userExpenses))
+
+        // Navigate to FinanceTracker with fullName in the query
+        this.$router.push({ name: 'FinanceTracker', query: { fullName: userData.fullName } })
       } catch (error) {
         if (error.response && error.response.status === 401) {
           alert('Login failed: Invalid username or password.')

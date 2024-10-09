@@ -9,5 +9,13 @@ const connex = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
 const db = {}
 db.Sequelize = Sequelize
 db.connex = connex
+
 db.Users = require('./user.model.js')(connex, Sequelize)
+db.Expenses = require('./expense.model.js')(connex, Sequelize)
+db.Tasks = require('./task.model.js')(connex, Sequelize)
+
+db.Users.associate(db);
+db.Expenses.associate(db);
+db.Tasks.associate(db);
+
 module.exports = db

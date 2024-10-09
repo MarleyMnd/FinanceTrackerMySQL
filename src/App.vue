@@ -24,13 +24,16 @@ export default {
   data () {
     return {
       fullName: '',
-      balance: ''
+      balance: '',
+      userExpenses: [],
+      userTasks: []
     }
   },
   mounted () {
-    // Fetch the full name from localStorage and set it to the component's state
-    this.fullName = localStorage.getItem('full name') || 'Guest' // Ensure the key matches what you set
-    this.balance = localStorage.getItem('balance') || '/' // Ensure the key matches what you set
+    // Fetch the user details from localStorage and set them to the component's state
+    this.fullName = localStorage.getItem('user') || 'Guest'
+    this.userExpenses = localStorage.getItem('userExpenses') || []
+    this.userId = localStorage.getItem('userId') || null
   }
 }
 </script>

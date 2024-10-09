@@ -1,6 +1,7 @@
 module.exports = app => {
   const Users = require('../controllers/user.controller.js')
   const router = require('express').Router()
+
   router.get('/', Users.findAll)
   router.post('/', Users.create)
   router.get('/:id', Users.findOne)
@@ -8,5 +9,6 @@ module.exports = app => {
   router.put('/:id', Users.update)
   router.post('/login', Users.login)
   app.post('/login', Users.login)
+
   app.use('/api/users', router)
 }

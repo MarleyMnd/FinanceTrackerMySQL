@@ -54,11 +54,11 @@ exports.update = (req, res) => {
    .then(num => {
        if (num == 1){
            res.send({
-               message: 'product updated'
+               message: 'user updated'
            })
        }else{
            res.send({
-               message: 'Product not found'
+               message: 'user not found'
            })
        }
    })
@@ -78,11 +78,11 @@ exports.delete = (req, res) => {
    .then(num => {
        if (num == 1){
            res.send({
-               message: 'Product deleted'
+               message: 'user deleted'
            })
        }else{
            res.send({
-               message: 'Product not found'
+               message: 'user not found'
            })
        }
    })
@@ -117,15 +117,19 @@ exports.login = async (req, res) => {
             });
         }
 
+        user.userExpenses = await db.Expenses.findAll({ where: { ID_user: user.id } })
+        user.userTasks = await db.Tasks.findAll({ where: { ID_user: user.id } })
+
         // If login is successful, send a success response
         res.status(200).send({
             message: 'Login successful',
-            user: {
-                username: user.username,
-                balance: user.balance,
-                expenses: user.expenses,
-                fullName: user.fullName
-            }
+            id: user.id,
+            username: user.username,
+            balance: user.balance,
+            expenses: user.expenses,
+            fullName: user.fullName,
+            userExpenses: user.userExpenses,
+            userTasks: user.userTasks
         });
     } catch (err) {
         res.status(500).send({

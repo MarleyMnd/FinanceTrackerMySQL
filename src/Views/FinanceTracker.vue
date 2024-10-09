@@ -35,10 +35,10 @@
               </tr>
               <!-- Transactions -->
               <tr v-for="(expense, expenseIndex) in expenseGroup.expenses" :key="expenseIndex">
-                <td class="w-1/3 whitespace-nowrap px-6 py-2 text-left">{{ expense.Name }}</td>
-                <td class="w-1/3 whitespace-nowrap px-6 py-2 italic font-thin text-center">{{ formatTime(expense.Date) }}</td>
-                <td class="w-1/3 whitespace-nowrap px-6 py-2 text-right" :class="expense.Price < 0 ? 'text-red-600' : 'text-green-600'">
-                  {{ formatPrice(expense.Price) }}
+                <td class="w-1/3 whitespace-nowrap px-6 py-2 text-left">{{ expense.name }}</td>
+                <td class="w-1/3 whitespace-nowrap px-6 py-2 italic font-thin text-center">{{ formatTime(expense.datetime) }}</td>
+                <td class="w-1/3 whitespace-nowrap px-6 py-2 text-right" :class="expense.price < 0 ? 'text-red-600' : 'text-green-600'">
+                  {{ formatPrice(expense.price) }}
                 </td>
               </tr>
             </template>
@@ -73,7 +73,6 @@
           <div class="text-center text-lg font-semibold text-gray-800">
             <router-link to="/SubscriptionManag" class="hover:text-gray-500">Your subscriptions</router-link>
           </div>
-          <img src="chart-placeholder.png" alt="Chart of subscriptions" class="mt-4 w-full h-40 object-cover rounded-lg">
         </div>
         <!-- Smart Banking -->
         <div class="bg-gray-100 p-6 rounded-lg shadow-md">
@@ -93,12 +92,14 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data () {
     return {
       username: '',
       fullName: '',
-      balance: 0,
+      balance: '',
       Allexpenses: [],
       totalExpenses: 0,
       groupedExpenses: [],
@@ -107,27 +108,25 @@ export default {
     }
   },
   created () {
-  // Fetch data from query params or localStorage if available
-    this.username = this.$route.query.username || localStorage.getItem('username') || ''
     this.fullName = this.$route.query.fullName || localStorage.getItem('fullName') || 'Guest'
+    this.balance = this.$route.query.balance || localStorage.getItem('balance') || 0
+    this.userId = this.$route.query.userId || localStorage.getItem('userId') || null
 
-    // Retrieve the expenses data from query params or localStorage
-    const expensesData = this.$route.query.Allexpenses || localStorage.getItem('Allexpenses') || '[]'
+    const userExpensesData = this.$route.query.userExpenses || localStorage.getItem('userExpenses') || '[]'
+    this.Allexpenses = JSON.parse(userExpensesData) // Parse the JSON string to an object
 
-    // Parse and set Allexpenses
-    this.Allexpenses = JSON.parse(expensesData)
+    console.log('User expenses:', JSON.parse(JSON.stringify(this.Allexpenses)))
 
     // Now calculate the total expenses and balance after setting Allexpenses
     this.groupedExpenses = this.groupExpensesByDate(this.Allexpenses)
     this.totalExpenses = this.calculateTotalExpenses(this.Allexpenses)
-    this.balance = this.calculateBalance(this.Allexpenses) || '/' // Fallback to '/' if no balance
   },
   methods: {
     // Group expenses by date
     groupExpensesByDate (expenses) {
       const grouped = []
       expenses.forEach(expense => {
-        const date = expense.Date.split('T')[0] // Assuming ISO format
+        const date = expense.datetime.split('T')[0] // Assuming ISO format
         let group = grouped.find(g => g.date === date)
         if (!group) {
           group = { date, expenses: [] }
@@ -135,18 +134,20 @@ export default {
         }
         group.expenses.push(expense)
       })
+      console.log('Grouped expenses:', grouped)
       return grouped
     },
     // Calculate total expenses
-    calculateTotalExpenses (expenses) {
-      return expenses.reduce((sum, expense) => {
-        return expense.Price < 0 ? sum + Math.abs(parseFloat(expense.Price)) : sum // Only sum negative expenses
+    calculateTotalExpenses (userExpenses) {
+      return userExpenses.reduce((sum, expense) => {
+        return sum + Math.abs(parseFloat(expense.price)) // Accumule les prix des dépenses
       }, 0)
     },
+    // Calculate balance
     calculateBalance (expenses) {
       return expenses.reduce((balance, expense) => {
-        return balance + parseFloat(expense.Price) // Adds both positive and negative expenses correctly
-      }, 0) // Start from 0
+        return balance + parseFloat(expense.price) // Additionne les dépenses correctement
+      }, 0) // Commence à partir de 0
     },
     // Format date (helper function)
     formatDate (date) {
@@ -162,45 +163,50 @@ export default {
     },
     // Add new expense to the database
     async addExpense () {
-      const newExpense = {
-        Name: this.newExpenseName,
-        Price: parseFloat(this.newExpensePrice),
-        Date: new Date().toISOString()
+    // Trim the name to remove leading or trailing spaces
+      const expenseName = this.newExpenseName ? this.newExpenseName.trim() : ''
+
+      // Check if the expense name or price is empty
+      if (!expenseName || !this.newExpensePrice) {
+        alert('Please enter both an expense name and a price.')
+        return
       }
 
+      const newExpense = {
+        name: expenseName,
+        price: parseFloat(this.newExpensePrice),
+        datetime: new Date().toISOString()
+      }
+
+      console.log('Adding Expense:', newExpense)
+
       try {
-        const response = await fetch('http://localhost:3001/add-expense', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            username: this.username || localStorage.getItem('username'),
-            expense: newExpense
-          })
+        const response = await axios.post('http://localhost:8080/addExpense', {
+          username: this.username || localStorage.getItem('username'),
+          expense: newExpense,
+          userId: this.userId // Pass the user ID here
         })
 
-        if (response.ok) {
-          const data = await response.json()
-          this.Allexpenses.push(data.expense)
+        const expenseData = response.data
+        console.log('Expense added successfully:', expenseData)
 
-          // Update balance based on the nature of the new expense
-          this.balance = this.calculateBalance(this.Allexpenses) // Calculate balance after adding the new expense
+        this.Allexpenses.push(expenseData)
+        console.log('All expenses:', this.Allexpenses)
+        this.localBalance = this.calculateBalance(this.Allexpenses)
+        this.totalExpenses = this.calculateTotalExpenses(this.Allexpenses)
+        this.groupedExpenses = this.groupExpensesByDate(this.Allexpenses)
 
-          // Recalculate total expenses
-          this.totalExpenses = this.calculateTotalExpenses(this.Allexpenses)
-
-          // Group expenses by date
-          this.groupedExpenses = this.groupExpensesByDate(this.Allexpenses)
-
-          // Clear input fields
-          this.newExpenseName = ''
-          this.newExpensePrice = 0
-        } else {
-          console.error('Error adding expense:', await response.json())
-        }
+        // Clear input fields
+        this.newExpenseName = ''
+        this.newExpensePrice = 0
       } catch (error) {
-        console.error('Error adding expense:', error)
+        if (error.response) {
+          console.error('Error adding expense:', error.response.data)
+          alert('Failed to add expense: ' + (error.response.data.message || 'An error occurred. Please try again.'))
+        } else {
+          console.error('Error adding expense:', error)
+          alert('Failed to add expense: An unexpected error occurred. Please try again later.')
+        }
       }
     },
     async removeLastExpense () {
@@ -212,23 +218,23 @@ export default {
       const lastExpense = this.Allexpenses[this.Allexpenses.length - 1]
 
       try {
-        const response = await fetch('http://localhost:3001/remove-expense', {
-          method: 'POST',
+        const response = await fetch('http://localhost:8080/api/expenses', { // Update to your expense deletion route
+          method: 'DELETE',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             username: this.username || localStorage.getItem('username'),
-            expenseId: lastExpense._id // Assuming each expense has a unique _id in the database
+            expenseId: lastExpense.id // Changed to 'id' for Sequelize/MySQL
           })
         })
 
         if (response.ok) {
-        // Remove last expense from the array
+          // Remove last expense from the array
           this.Allexpenses.pop()
 
-          // Update balance and total expenses
-          this.balance = this.calculateBalance(this.Allexpenses)
+          // Update localBalance and total expenses
+          this.localBalance = this.calculateBalance(this.Allexpenses)
           this.totalExpenses = this.calculateTotalExpenses(this.Allexpenses)
           this.groupedExpenses = this.groupExpensesByDate(this.Allexpenses)
         } else {
