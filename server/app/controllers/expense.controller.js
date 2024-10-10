@@ -119,3 +119,36 @@ exports.addExpense = (req, res) => {
         });
     });
 };
+
+exports.removeLastExpense = (req, res) => {
+    const userId = req.body.userId; // Extraire l'ID de l'utilisateur depuis le corps de la requête
+
+    console.log('User ID:', userId);
+
+    // Trouver la dernière dépense de l'utilisateur
+    Expenses.findOne({
+        where: { ID_user: userId },
+        order: [['datetime', 'DESC']]
+    })
+    .then(expense => {
+        if (!expense) {
+            res.status(404).send({
+                message: 'No expenses found for this user.'
+            });
+            return;
+        }
+
+        // Supprimer la dernière dépense trouvée
+        return expense.destroy();
+    })
+    .then(() => {
+        res.send({
+            message: 'Last expense deleted successfully.'
+        });
+    })
+    .catch(err => {
+        res.status(500).send({
+            message: err.message || 'Some error occurred while deleting the last expense.'
+        });
+    });
+};

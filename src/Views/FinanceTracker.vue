@@ -14,12 +14,12 @@
         <!-- Balance -->
         <div class="bg-gray-100 rounded-lg p-4 text-center shadow-md flex-1">
           <p class="text-lg font-medium text-gray-600">Your balance</p>
-          <h2 class="text-green-500 text-3xl font-bold">{{ localBalance }}$</h2>
+          <h2 class="text-green-500 text-3xl font-bold">{{ localBalance.toFixed(2) }}$</h2>
         </div>
         <!-- Total Expenses -->
         <div class="bg-gray-100 rounded-lg p-4 text-center shadow-md flex-1">
           <p class="text-lg font-medium text-gray-600">Your total expenses</p>
-          <h2 class="text-red-500 text-3xl font-bold">{{ totalExpenses }}$</h2>
+          <h2 class="text-red-500 text-3xl font-bold">{{ totalExpenses.toFixed(2) }}$</h2>
         </div>
       </div>
 
@@ -42,30 +42,31 @@
                 </td>
               </tr>
             </template>
-
-            <!-- Add Expense Form -->
-            <tr class="bg-gray-50">
-              <td colspan="3" class="px-6 py-4">
-                <div class="flex space-x-4">
-                  <input type="text" v-model="newExpenseName" placeholder="Expense Name" class="flex-1 p-3 rounded-lg border border-gray-300"/>
-                  <input type="number" v-model="newExpensePrice" placeholder="Amount" class="flex-1 p-3 rounded-lg border border-gray-300"/>
-                  <button @click="addExpense" class="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg">Add</button>
-                </div>
-              </td>
-            </tr>
-
-            <!-- Footer Row -->
-            <tr>
-              <td colspan="3" class="px-6 py-4 text-right">
-                <span class="flex justify-end space-x-4">
-                  <button @click="removeLastExpense" class="bg-gray-800 text-white py-2 px-4 rounded-lg shadow-md hover:bg-beige transition-colors duration-300">Remove</button>
-                </span>
-              </td>
-            </tr>
           </tbody>
         </table>
       </div>
 
+      <div class="flex space-x-4 mb-4">
+    <input type="text" v-model="newExpenseName" placeholder="Expense Name" class="flex-1 p-3 rounded-lg border border-gray-300" />
+    <input type="number" v-model="newExpensePrice" placeholder="Amount" class="flex-1 p-3 rounded-lg border border-gray-300" />
+    <button @click="addExpense" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg">Add</button>
+  </div>
+<div class="overflow-hidden rounded-lg border mb-4 shadow-md">
+    <table class="min-w-full bg-gray-100">
+      <tbody>
+        <!-- Table content goes here -->
+        <!-- Footer Row -->
+        <tr>
+          <td colspan="4" class="px-6 py-4 text-right">
+            <div class="flex justify-end">
+              <button @click="removeLastExpense" class="flex-1 bg-gray-800 text-white py-2 rounded-lg shadow-md hover:bg-beige transition-colors duration-300">Remove</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
       <!-- Additional Information Sections -->
       <section class="grid gap-6 md:grid-cols-2">
         <!-- Subscriptions -->
@@ -85,7 +86,7 @@
 
       <!-- Footer -->
       <footer class="mt-10 text-center text-gray-500">
-        <p class="text-sm">&copy; 2024 Fleury Menard Chartier Luce-Laurent</p>
+        <p class="text-sm">&copy; 2024 Fleury Menard Chartier</p>
       </footer>
     </main>
   </div>
@@ -140,17 +141,17 @@ export default {
       console.log('Grouped expenses:', grouped)
       return grouped
     },
-    // Calculate total expenses
+    // Calculate total expenses (only negative expenses)
     calculateTotalExpenses (userExpenses) {
       return userExpenses.reduce((sum, expense) => {
-        return sum + Math.abs(parseFloat(expense.price)) // Accumule les prix des dépenses
+        return expense.price < 0 ? sum + Math.abs(parseFloat(expense.price)) : sum
       }, 0)
     },
-    // Calculate balance based on initial localBalance
+    // Calculate balance based on the initial localBalance plus all expenses
     calculateBalance (expenses) {
       return this.localBalance + expenses.reduce((balance, expense) => {
-        return balance + parseFloat(expense.price) // Adjust based on added expenses
-      }, 0) // Start from 0
+        return balance + parseFloat(expense.price)
+      }, 0)
     },
     // Format date (helper function)
     formatDate (date) {
@@ -190,14 +191,12 @@ export default {
         // Update the expenses list
         this.Allexpenses.push(expenseData)
 
-        // Check if the expense is positive or negative
+        // Check if the last expense was positive or negative
         if (expenseData.price > 0) {
-          // For positive expenses, just modify the balance
-          this.localBalance += expenseData.price // Subtract from balance
+          this.localBalance += expenseData.price
         } else {
-          // For negative expenses, modify both expenses and balance
-          this.localBalance -= Math.abs(expenseData.price) // Add back to balance
-          this.totalExpenses -= Math.abs(expenseData.price) // Adjust total expenses
+          this.localBalance -= Math.abs(expenseData.price)
+          this.totalExpenses += Math.abs(expenseData.price)
         }
 
         // Update grouped expenses
@@ -220,30 +219,32 @@ export default {
       const lastExpense = this.Allexpenses[this.Allexpenses.length - 1]
 
       try {
-        const response = await fetch('http://localhost:8080/api/expenses', { // Update to your expense deletion route
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            username: this.username || localStorage.getItem('username'),
-            expenseId: lastExpense.id // Changed to 'id' for Sequelize/MySQL
-          })
+        const response = await axios.post('http://localhost:8080/removeLastExpense', {
+          userId: this.userId
         })
 
-        if (response.ok) {
-          // Remove last expense from the array
+        if (response.data.message === 'Last expense deleted successfully.') {
+          // Remove the last expense from the array
           this.Allexpenses.pop()
 
-          // Update localBalance and total expenses
-          this.localBalance += parseFloat(lastExpense.price)
-          this.totalExpenses = this.calculateTotalExpenses(this.Allexpenses)
+          // Check if the last expense was positive or negative
+          if (lastExpense.price > 0) {
+            // For positive expenses, subtract the amount from the balance
+            this.localBalance -= lastExpense.price
+          } else {
+            // For negative expenses, add the amount back to the balance
+            this.localBalance += Math.abs(lastExpense.price)
+            this.totalExpenses -= Math.abs(lastExpense.price)
+          }
+
+          // Update grouped expenses
           this.groupedExpenses = this.groupExpensesByDate(this.Allexpenses)
         } else {
-          console.error('Error removing expense:', await response.json())
+          console.error('Error removing expense:', response.data.message)
         }
       } catch (error) {
         console.error('Error removing expense:', error)
+        alert('Failed to remove the last expense. Please try again.')
       }
     }
   }

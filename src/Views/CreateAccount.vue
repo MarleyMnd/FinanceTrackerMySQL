@@ -42,7 +42,7 @@
     </div>
 
     <footer class="mt-10 text-center text-gray-500">
-      <p class="text-sm">&copy; 2024 Fleury Menard Chartier Luce-Laurent</p>
+      <p class="text-sm">&copy; 2024 Fleury Menard Chartier</p>
     </footer>
   </div>
 </template>
