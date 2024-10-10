@@ -11,16 +11,12 @@ app.use(bodyParser.urlencoded({ extended:true }))
 require('./app/routes/user.route')(app)
 require('./app/routes/expense.route')(app)
 require('./app/routes/task.route')(app)
-
-//test
-app.get('/', (req, res) => {
-    res.json({message: 'Welcome'})
-})
+require('./app/routes/subscription.route')(app)
 
 const PORT = 8080
 
 const db = require('./app/models')
-db.connex.sync() // 'force: false' pour ne pas supprimer les données existantes
+db.connex.sync({forced: true}) // 'force: false' pour ne pas supprimer les données existantes
     .then(() => {
         console.log('Tables créées avec succès !');
         // Démarrez le serveur après la synchronisation

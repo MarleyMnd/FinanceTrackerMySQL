@@ -1,46 +1,50 @@
 <template>
-  <div class="bg_color min-h-screen flex flex-col">
-    <!-- Conteneur principal -->
+  <div class="bg-color min-h-screen flex flex-col">
+    <!-- Main Container -->
     <div class="w-full max-w-5xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
-      <!-- Header de la page -->
+      <!-- Page Header -->
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-semibold">Subscription Manager</h1>
         <router-link to="/Finance" class="text-blue-600 hover:underline">Back</router-link>
       </div>
 
-      <!-- Formulaire pour ajouter un nouvel abonnement -->
+      <!-- Form to Add a New Subscription -->
       <div id="subscription-form" class="bg-gray-50 p-6 rounded-lg shadow-md">
         <h2 class="text-2xl font-semibold mb-4">Add a Subscription</h2>
 
-        <!-- Champ de nom de l'abonnement -->
+        <!-- Subscription Name Field -->
         <div class="mb-4">
           <label for="name" class="block text-sm font-medium text-gray-700">Name of the Subscription</label>
           <input type="text" id="name" v-model="subscription.name" class="mt-1 w-full p-3 bg-white text-gray-900 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Name of the subscription">
         </div>
 
-        <!-- Champ de prix -->
+        <!-- Price Field -->
         <div class="mb-4">
           <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
           <input type="number" id="price" v-model="subscription.price" class="mt-1 w-full p-3 bg-white text-gray-900 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Price">
         </div>
 
-        <!-- Champ de prochaine date de paiement -->
+        <!-- Next Payment Date Field -->
         <div class="mb-4">
           <label for="nextPayment" class="block text-sm font-medium text-gray-700">Next Payment Date</label>
           <input type="date" id="nextPayment" v-model="subscription.nextPayment" class="mt-1 w-full p-3 bg-white text-gray-900 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
         </div>
 
-        <!-- Champ de type de plan -->
+        <!-- Plan Type Field -->
         <div class="mb-4">
           <label for="planType" class="block text-sm font-medium text-gray-700">Plan Type</label>
-          <input type="text" id="planType" v-model="subscription.planType" class="mt-1 w-full p-3 bg-white text-gray-900 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Plan type (ex. Monthly, Yearly)">
+          <select id="planType" v-model="subscription.planType" class="mt-1 w-full p-3 bg-white text-gray-900 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <option value="" disabled>Select plan type</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Yearly">Yearly</option>
+          </select>
         </div>
 
-        <!-- Bouton d'ajout -->
+        <!-- Add Subscription Button -->
         <button @click="addSubscription" class="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg shadow-lg">Add a Subscription</button>
       </div>
 
-      <!-- Liste des abonnements -->
+      <!-- List of Subscriptions -->
       <div v-if="subscriptions.length > 0" class="mt-10">
         <h2 class="text-2xl font-semibold mb-4">Your Subscriptions</h2>
         <div class="bg-gray-100 p-4 rounded-lg shadow-md">
@@ -51,7 +55,6 @@
                 <th class="py-2 text-left text-sm font-medium text-gray-700">Price</th>
                 <th class="py-2 text-left text-sm font-medium text-gray-700">Next Payment</th>
                 <th class="py-2 text-left text-sm font-medium text-gray-700">Plan Type</th>
-                <th class="py-2 text-left text-sm font-medium text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -68,16 +71,18 @@
           </table>
         </div>
       </div>
-
     </div>
 
+    <!-- Footer -->
     <footer class="mt-10 text-center text-gray-500">
-      <p class="text-sm">&copy; 2024 Fleury Menard Chartier</p>
+      <p class="text-sm">&copy; 2024 Fleury Menard Chartier Luce-Laurent</p>
     </footer>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data () {
     return {
@@ -90,67 +95,104 @@ export default {
       subscriptions: [] // List to store subscriptions
     }
   },
+  mounted () {
+    this.fetchSubscriptions() // Fetch subscriptions from the backend on mount
+  },
   methods: {
-    addSubscription () {
+    async addSubscription () {
       if (this.subscription.name && this.subscription.price && this.subscription.nextPayment && this.subscription.planType) {
-        // Prepare the subscription data
-        const newSubscription = {
-          Name: this.subscription.name,
-          Price: this.subscription.price,
-          PaymentDate: this.subscription.nextPayment,
-          PlanType: this.subscription.planType
-        }
+        try {
+          // Convert nextPayment to a Date object
+          const nextPaymentDate = new Date(this.subscription.nextPayment)
 
-        // Send a POST request to the server
-        fetch('http://localhost:3001/add-subscription', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            username: this.username || localStorage.getItem('username'),
-            subscription: newSubscription
+          // Format the date as YYYY-MM-DD HH:MM:SS
+          const year = nextPaymentDate.getFullYear()
+          const month = String(nextPaymentDate.getMonth() + 1).padStart(2, '0') // Months are 0-indexed
+          const day = String(nextPaymentDate.getDate()).padStart(2, '0')
+          const hours = String(nextPaymentDate.getHours()).padStart(2, '0')
+          const minutes = String(nextPaymentDate.getMinutes()).padStart(2, '0')
+          const seconds = String(nextPaymentDate.getSeconds()).padStart(2, '0')
+
+          // Construct the formatted date string
+          const formattedNextPayment = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+
+          const subscriptionData = {
+            ...this.subscription,
+            nextPayment: formattedNextPayment // Use the formatted date string
+          }
+
+          console.log('Adding subscription:', subscriptionData)
+
+          const response = await axios.post('http://localhost:8080/addSubscription', {
+            userId: localStorage.getItem('userId'),
+            subscription: subscriptionData
           })
-        })
-          .then(response => response.json())
-          .then(data => {
-            if (data.message === 'Subscription added successfully') {
-              // Add to local array only if server call succeeds
-              this.subscriptions.push({ ...this.subscription })
-              console.log('Subscription added:', this.subscription)
-              this.subscription = {
-                name: '',
-                price: null,
-                nextPayment: '',
-                planType: ''
-              }
-            } else {
-              alert('Error adding subscription: ' + data.message)
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error)
-            alert('An error occurred while adding the subscription.')
-          })
+
+          this.subscriptions.push(response.data.subscription) // Add the new subscription
+
+          // Reset subscription form
+          this.subscription = {
+            name: '',
+            price: null,
+            nextPayment: '',
+            planType: ''
+          }
+        } catch (error) {
+          console.error('Error adding subscription:', error)
+        }
       } else {
         alert('Please fill out all fields before adding a subscription.')
       }
     },
-    removeSubscription (index) {
-      // Remove subscription from the list
-      this.subscriptions.splice(index, 1)
-      console.log('Subscription removed at index:', index)
+    async fetchSubscriptions () {
+      try {
+        const response = await axios.post('http://localhost:8080/getSubscriptions', {
+          userId: localStorage.getItem('userId') // Get userId from localStorage
+        })
+
+        // Format the nextPayment date before assigning to subscriptions
+        this.subscriptions = response.data.subscriptions.map(sub => {
+          // Format the date to 'YYYY-MM-DD'
+          const date = new Date(sub.nextPayment)
+          const formattedDate = date.toISOString().split('T')[0] // Extract 'YYYY-MM-DD'
+          return {
+            ...sub,
+            nextPayment: formattedDate // Use formatted date
+          }
+        })
+      } catch (error) {
+        console.error('Error fetching subscriptions:', error)
+      }
+    },
+    async removeSubscription (index) {
+      const userId = localStorage.getItem('userId') // Get the logged-in user's username
+      const subscriptionId = this.subscriptions[index].id // Get the subscription's ID
+
+      try {
+        const response = await axios.post('http://localhost:8080/removeSubscription', {
+          userId,
+          subscriptionId
+        })
+
+        if (response.data.success) {
+          this.subscriptions.splice(index, 1)
+        } else {
+          alert('Failed to remove subscription: ' + response.data.message) // Show error message
+        }
+      } catch (error) {
+        console.error('Error removing subscription:', error)
+      }
     }
   }
 }
 </script>
 
-<style scoped>
+<style>
 .bg-color {
   background: linear-gradient(to right, #364652, rgb(255, 255, 255));
 }
 
-/* Designing for scroll-bar */
+/* Designing for scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }

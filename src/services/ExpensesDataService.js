@@ -24,7 +24,7 @@ class UsersDataService {
     return http.delete(`/expenses/${id}`)
   }
 
-  getAllUsers () {
+  getAllExpenses () {
     return axios.get(API_URL)
   }
 }
