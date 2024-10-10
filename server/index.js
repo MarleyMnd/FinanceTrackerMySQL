@@ -16,7 +16,7 @@ require('./app/routes/subscription.route')(app)
 const PORT = 8080
 
 const db = require('./app/models')
-db.connex.sync({forced: true}) // 'force: false' pour ne pas supprimer les données existantes
+db.connex.sync() // 'force: false' pour ne pas supprimer les données existantes
     .then(() => {
         console.log('Tables créées avec succès !');
         // Démarrez le serveur après la synchronisation

@@ -72,6 +72,7 @@ export default {
         localStorage.setItem('fullName', userData.fullName)
         localStorage.setItem('balance', userData.balance)
         localStorage.setItem('userExpenses', JSON.stringify(userData.userExpenses))
+        localStorage.setItem('userTasks', JSON.stringify(userData.userTasks))
 
         // Navigate to FinanceTracker with fullName in the query
         this.$router.push({ name: 'FinanceTracker', query: { fullName: userData.fullName } })
