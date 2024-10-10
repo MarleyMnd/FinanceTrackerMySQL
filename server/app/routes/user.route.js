@@ -7,8 +7,8 @@ module.exports = app => {
   router.get('/:id', Users.findOne)
   router.delete('/:id', Users.delete)
   router.put('/:id', Users.update)
-  router.post('/login', Users.login)
   app.post('/login', Users.login)
+  app.post('/register', Users.register)
 
   app.use('/api/users', router)
 }

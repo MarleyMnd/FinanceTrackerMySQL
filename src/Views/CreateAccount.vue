@@ -33,6 +33,18 @@
           />
         </div>
 
+        <!-- Full Name -->
+        <div class="mb-4">
+          <label for="fullname" class="block text-sm font-medium text-gray-700">Full Name</label>
+          <input
+            type="text"
+            id="fullname"
+            v-model="credentials.fullName"
+            class="mt-1 w-full p-3 bg-white text-gray-900 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter your full name"
+          />
+        </div>
+
         <button
           @click="createAccount"
           class="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg shadow-lg">
@@ -42,38 +54,49 @@
     </div>
 
     <footer class="mt-10 text-center text-gray-500">
-      <p class="text-sm">&copy; 2024 Fleury Menard Chartier</p>
+      <p class="text-sm">&copy; 2024 Fleury Menard Chartier Luce-Laurent</p>
     </footer>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data () {
     return {
       credentials: {
         username: '',
-        password: ''
+        password: '',
+        fullName: ''
       }
     }
   },
   methods: {
+    validatePassword (password) {
+      const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/
+      return regex.test(password)
+    },
     async createAccount () {
+      // Validate the password
+      if (!this.validatePassword(this.credentials.password)) {
+        alert('Password must contain at least 8 characters and one number.')
+        return
+      }
+
       try {
-        const response = await fetch('http://localhost:3001/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(this.credentials)
+        console.log('Creating account:', this.credentials)
+
+        const response = await axios.post('http://localhost:8080/register', {
+          username: this.credentials.username,
+          password: this.credentials.password,
+          fullName: this.credentials.fullName
         })
 
-        if (response.ok) {
-          const data = await response.json()
-          console.log('Account created successfully:', data)
+        if (response.status === 201) {
+          console.log('Account created successfully:', response.data)
 
-          // Redirect to the login page
-          this.$router.push('/') // Adjust the path as needed
+          // Redirect to the login page with fullName as a query parameter
         } else if (response.status === 409) {
           alert('Username already exists')
         } else {
@@ -86,6 +109,7 @@ export default {
       // Clear the form after submission
       this.credentials.username = ''
       this.credentials.password = ''
+      this.credentials.fullName = ''
     }
   }
 }
@@ -94,25 +118,26 @@ export default {
 <style>
 .bg-color {
   background: linear-gradient(to right, #364652, rgb(255, 255, 255));
-}  /* Designing for scroll-bar */
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
+}
+/* Designing for scroll-bar */
+::-webkit-scrollbar {
+  width: 6px;
+}
 
-  /* Track */
-  ::-webkit-scrollbar-track {
-    background: grey;
-    border-radius: 5px;
-  }
+/* Track */
+::-webkit-scrollbar-track {
+  background: grey;
+  border-radius: 5px;
+}
 
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
-    background: #2c3e50;
-    border-radius: 5px;
-  }
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #2c3e50;
+  border-radius: 5px;
+}
 
-  /* Handle on hover */
-  ::-webkit-scrollbar-thumb:hover {
-    background: #555;
-  }
-  </style>
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+</style>

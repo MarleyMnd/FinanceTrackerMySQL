@@ -1,4 +1,5 @@
-const db = require('../models') 
+const db = require('../models')
+const bcrypt = require('bcrypt')
 const Users = db.Users
 
 exports.findAll = (req, res) => {
@@ -110,8 +111,11 @@ exports.login = async (req, res) => {
             });
         }
 
+        // Compare the provided password with the hashed password in the database
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
         // Check if the password matches
-        if (user.password !== password) {
+        if (!passwordMatch) {
             return res.status(401).send({
                 message: 'This username and password combination is invalid'
             });
@@ -136,5 +140,35 @@ exports.login = async (req, res) => {
             message: 'An error occurred during login',
             error: err.message || 'Internal server error'
         });
+    }
+};
+
+exports.register = async (req, res) => {
+    try {
+        const { username, password, fullName } = req.body;
+
+        // Check if the username already exists
+        const existingUser = await Users.findOne({ where: { username } });
+        if (existingUser) {
+            return res.status(409).json({ message: 'Username already exists' });
+        }
+
+        // Hash the password before saving to the database
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        // Create a new user with the provided details
+        const newUser = await Users.create({
+            username,
+            password: hashedPassword,
+            balance: 0, // Initial balance set to 0
+            expenses: 0, // Empty expenses list
+            fullName
+        });
+
+        res.status(201).json({ message: 'Account created successfully', user: newUser });
+    } catch (error) {
+        console.error('Error registering user:', error);
+        res.status(500).json({ message: 'An error occurred while creating the account. Please try again.' });
     }
 };
